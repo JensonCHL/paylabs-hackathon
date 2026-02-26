@@ -58,6 +58,47 @@ Expected success:
 - Writes `report_generation_staging.status='READY'`
 - Returns `tool_calls_count`
 
+## Backend Integration
+
+Backend should call:
+- `POST /generate-report`
+- Base URL example: `http://localhost:8000`
+- Content-Type: `application/json`
+
+Required request body parameters:
+- `report_id` (string): unique report job id (example: `january-full`)
+- `merchant_id` (string): merchant identifier (MVP default: `01`)
+- `start_date` (string, `YYYY-MM-DD`)
+- `end_date` (string, `YYYY-MM-DD`)
+
+Example JSON:
+```json
+{
+  "report_id": "january-full",
+  "merchant_id": "01",
+  "start_date": "2026-01-01",
+  "end_date": "2026-01-31"
+}
+```
+
+Success response example:
+```json
+{
+  "ok": true,
+  "report_id": "january-full",
+  "result": {
+    "updated": true,
+    "report_id": "january-full",
+    "status": "READY",
+    "generation_date": "2026-02-26T16:20:51.213587"
+  },
+  "tool_calls_count": 7
+}
+```
+
+Failure behavior:
+- If any analysis/write step fails, agent marks staging as `FAILED` via MCP `mark_report_failed`.
+
 ## Notes
 
 - `.env` is ignored by git (`.gitignore`).
