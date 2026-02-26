@@ -99,6 +99,35 @@ Success response example:
 Failure behavior:
 - If any analysis/write step fails, agent marks staging as `FAILED` via MCP `mark_report_failed`.
 
+## Frontend Ready URL (React)
+
+Use this full local endpoint:
+- `http://localhost:8000/generate-report`
+
+If your React app runs on a different machine, replace `localhost` with the agent host IP:
+- Example: `http://192.168.1.10:8000/generate-report`
+
+React `fetch` example:
+```js
+await fetch("http://localhost:8000/generate-report", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    report_id: "january-full",
+    merchant_id: "01",
+    start_date: "2026-01-01",
+    end_date: "2026-01-31"
+  })
+});
+```
+
+cURL example:
+```bash
+curl -X POST "http://localhost:8000/generate-report" \
+  -H "Content-Type: application/json" \
+  -d "{\"report_id\":\"january-full\",\"merchant_id\":\"01\",\"start_date\":\"2026-01-01\",\"end_date\":\"2026-01-31\"}"
+```
+
 ## Notes
 
 - `.env` is ignored by git (`.gitignore`).
