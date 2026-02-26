@@ -128,6 +128,28 @@ curl -X POST "http://localhost:8000/generate-report" \
   -d "{\"report_id\":\"january-full\",\"merchant_id\":\"01\",\"start_date\":\"2026-01-01\",\"end_date\":\"2026-01-31\"}"
 ```
 
+## Backend Listener (Status-Driven Flow)
+
+Recommended backend flow for your PDF pipeline:
+1. Call `POST /generate-report` with `report_id`, `merchant_id`, `start_date`, `end_date`.
+2. Listen/poll `report_generation_staging.status` for that same `report_id`.
+3. If status becomes `READY`, read these columns from `report_generation_staging` and pass them into your PDF template variables:
+   - `total_revenue`
+   - `transaction_count`
+   - `top_selling_item_name`
+   - `top_selling_item_qty`
+   - `financial_summary`
+   - `pattern_analysis`
+   - `strategic_advice`
+4. If status becomes `FAILED`, stop PDF generation and surface the failure reason from backend logs/error handling.
+
+Example status check SQL:
+```sql
+SELECT report_id, status, total_revenue, transaction_count, top_selling_item_name, top_selling_item_qty, financial_summary, pattern_analysis, strategic_advice
+FROM report_generation_staging
+WHERE report_id = :report_id;
+```
+
 ## Notes
 
 - `.env` is ignored by git (`.gitignore`).
